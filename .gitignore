@@ -1,0 +1,16 @@
+.vs/
+node_modules/
+bin/
+obj/
+.env.local
+.env
+*.user
+*.userosscache
+*.sln.docstates
+.DS_Store
+TestResults/
+*.log
+.next/
+out/
+build/
+coverage/

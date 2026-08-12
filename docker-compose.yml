@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: assignment_db
+    environment:
+      POSTGRES_DB: assignment_system
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend/AssignmentSystem
+      dockerfile: Dockerfile
+    container_name: assignment_api
+    depends_on:
+      - postgres
+    ports:
+      - "5000:8080"
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=assignment_system;Username=postgres;Password=postgres
+      - Jwt__Key=super_secret_jwt_key_minimum_32_characters_here
+      - Jwt__Issuer=AssignmentSystem
+      - Jwt__Audience=AssignmentSystemUsers
+      - Jwt__ExpiryDays=7
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: assignment_frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:5000/api
+
+volumes:
+  pgdata:
